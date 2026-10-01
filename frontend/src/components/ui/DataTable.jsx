@@ -1,74 +1,7 @@
-import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 
 /** @param {{columns: Array, rows: Array, getRowKey?: (row: object, index: number) => string|number, sort?: object, onSort?: (key: string) => void, emptyMessage?: string}} props */
-export default function DataTable({
-  columns,
-  rows,
-  getRowKey = (_row, index) => index,
-  sort,
-  onSort,
-  emptyMessage = "No records available.",
-}) {
-  return (
-    <div className="table-shell">
-      <div className="overflow-x-auto">
-        <table className="data-table">
-          <thead>
-            <tr>
-              {columns.map((column) => (
-                <th
-                  key={column.key}
-                  aria-sort={
-                    sort?.key === column.key
-                      ? sort.direction === "asc"
-                        ? "ascending"
-                        : "descending"
-                      : "none"
-                  }
-                >
-                  {column.sortable && onSort ? (
-                    <button
-                      type="button"
-                      className="table-sort-button"
-                      onClick={() => onSort(column.key)}
-                    >
-                      {column.label}
-                      <SortIcon
-                        active={sort.key === column.key}
-                        direction={sort.direction}
-                      />
-                    </button>
-                  ) : (
-                    column.label
-                  )}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => (
-              <tr key={getRowKey(row, index)}>
-                {columns.map((column) => (
-                  <td key={column.key}>
-                    {column.render
-                      ? column.render(row, index)
-                      : row[column.key]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {!rows.length && <div className="empty-state">{emptyMessage}</div>}
-    </div>
-  );
+export default function DataTable({ columns, rows, getRowKey = (_row, index) => index, sort, onSort, emptyMessage = 'No records available.' }) {
+  return <div className="table-shell"><div className="overflow-x-auto"><table className="data-table"><thead><tr>{columns.map(column => <th key={column.key} aria-sort={sort?.key === column.key ? (sort.direction === 'asc' ? 'ascending' : 'descending') : 'none'}>{column.sortable && onSort ? <button type="button" className="table-sort-button" onClick={() => onSort(column.key)}>{column.label}<SortIcon active={sort.key === column.key} direction={sort.direction} /></button> : column.label}</th>)}</tr></thead><tbody>{rows.map((row, index) => <tr key={getRowKey(row, index)}>{columns.map(column => <td key={column.key}>{column.render ? column.render(row, index) : row[column.key]}</td>)}</tr>)}</tbody></table></div>{!rows.length && <div className="empty-state">{emptyMessage}</div>}</div>;
 }
-function SortIcon({ active, direction }) {
-  if (!active) return <ArrowUpDown size={13} aria-hidden="true" />;
-  return direction === "asc" ? (
-    <ArrowUp size={13} aria-hidden="true" />
-  ) : (
-    <ArrowDown size={13} aria-hidden="true" />
-  );
-}
+function SortIcon({ active, direction }) { if (!active) return <ArrowUpDown size={13} aria-hidden="true" />; return direction === 'asc' ? <ArrowUp size={13} aria-hidden="true" /> : <ArrowDown size={13} aria-hidden="true" />; }

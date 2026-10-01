@@ -1,33 +1,4 @@
-import { Database, ShieldCheck, TrendingUp } from "lucide-react";
-import StatCard from "@/components/ui/StatCard.jsx";
-import { money, percent } from "@/utils/format.js";
-export default function StatsGrid({ data }) {
-  return (
-    <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-      <StatCard
-        label="Stocks scanned"
-        value={data?.totalStocksScanned?.toLocaleString("en-IN") || "—"}
-        hint="NSE EQ instruments"
-        icon={<Database size={17} />}
-      />
-      <StatCard
-        label="Qualifying stocks"
-        value={data?.totalQualifyingStocks?.toLocaleString("en-IN") || "—"}
-        hint={`LTP < ₹${data?.minPrice ?? "—"} and positive change`}
-        icon={<ShieldCheck size={17} />}
-      />
-      <StatCard
-        label="Top gain"
-        value={data?.rows?.[0] ? percent(data.rows[0].changePercent) : "—"}
-        hint={data?.rows?.[0]?.tradingSymbol || "No data"}
-        icon={<TrendingUp size={17} />}
-      />
-      <StatCard
-        label="Latest LTP"
-        value={data?.rows?.[0] ? money(data.rows[0].ltp) : "—"}
-        hint={`Top ${data?.topN ?? "—"} selected`}
-        icon={<TrendingUp size={17} />}
-      />
-    </section>
-  );
-}
+import { Database, ShieldCheck, TrendingUp } from 'lucide-react';
+import StatCard from '@/components/ui/StatCard.jsx';
+import { money, percent } from '@/utils/format.js';
+export default function StatsGrid({ data }) { return <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><StatCard label="Stocks scanned" value={data?.totalStocksScanned?.toLocaleString('en-IN') || '—'} hint="NSE EQ instruments" icon={<Database size={17} />} /><StatCard label="Qualifying stocks" value={data?.totalQualifyingStocks?.toLocaleString('en-IN') || '—'} hint={`LTP < ₹${data?.minPrice ?? '—'} and positive change`} icon={<ShieldCheck size={17} />} /><StatCard label="Top gain" value={data?.rows?.[0] ? percent(data.rows[0].changePercent) : '—'} hint={data?.rows?.[0]?.tradingSymbol || 'No data'} icon={<TrendingUp size={17} />} /><StatCard label="Latest LTP" value={data?.rows?.[0] ? money(data.rows[0].ltp) : '—'} hint={`Top ${data?.topN ?? '—'} selected`} icon={<TrendingUp size={17} />} /></section>; }

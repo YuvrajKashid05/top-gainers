@@ -1,53 +1,5 @@
-import { Search } from "lucide-react";
-import Button from "@/components/ui/Button.jsx";
-import Card from "@/components/ui/Card.jsx";
-import Field from "@/components/ui/Field.jsx";
-export default function HistoryFilters({ filters, update }) {
-  return (
-    <Card className="grid gap-3 p-4 md:grid-cols-5">
-      <Field label="Date" htmlFor="history-date">
-        <input
-          id="history-date"
-          type="date"
-          value={filters.date}
-          onChange={(e) => update("date", e.target.value)}
-          className="input"
-        />
-      </Field>
-      <Field label="Symbol" htmlFor="history-symbol">
-        <input
-          id="history-symbol"
-          placeholder="e.g. SBIN"
-          value={filters.symbol}
-          onChange={(e) => update("symbol", e.target.value)}
-          className="input"
-        />
-      </Field>
-      <Field label="Rank" htmlFor="history-rank">
-        <input
-          id="history-rank"
-          type="number"
-          min="1"
-          value={filters.rank}
-          onChange={(e) => update("rank", e.target.value)}
-          className="input"
-        />
-      </Field>
-      <Field label="Top N" htmlFor="history-topn">
-        <input
-          id="history-topn"
-          type="number"
-          min="5"
-          value={filters.topN}
-          onChange={(e) => update("topN", e.target.value)}
-          className="input"
-        />
-      </Field>
-      <div className="flex items-end">
-        <Button variant="primary">
-          <Search size={15} aria-hidden="true" /> Apply
-        </Button>
-      </div>
-    </Card>
-  );
-}
+import { Search } from 'lucide-react';
+import Button from '@/components/ui/Button.jsx';
+import Card from '@/components/ui/Card.jsx';
+import Field from '@/components/ui/Field.jsx';
+export default function HistoryFilters({ filters, update }) { return <Card className="grid gap-3 p-4 md:grid-cols-5"><Field label="Date" htmlFor="history-date"><input id="history-date" type="date" value={filters.date} onChange={e => update('date', e.target.value)} className="input" /></Field><Field label="Symbol" htmlFor="history-symbol"><input id="history-symbol" placeholder="e.g. SBIN" value={filters.symbol} onChange={e => update('symbol', e.target.value)} className="input" /></Field><Field label="Rank" htmlFor="history-rank"><input id="history-rank" type="number" min="1" value={filters.rank} onChange={e => update('rank', e.target.value)} className="input" /></Field><Field label="Top N" htmlFor="history-topn"><input id="history-topn" type="number" min="5" value={filters.topN} onChange={e => update('topN', e.target.value)} className="input" /></Field><div className="flex items-end"><Button variant="primary"><Search size={15} aria-hidden="true" /> Apply</Button></div></Card>; }

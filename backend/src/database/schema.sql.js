@@ -32,12 +32,4 @@ CREATE INDEX IF NOT EXISTS idx_history_rank ON top20_history(rank);
 CREATE INDEX IF NOT EXISTS idx_refresh_started ON refresh_logs(started_at);
 `;
 
-export const defaultSettings = {
-  topN: 20,
-  minPrice: 20,
-  historyDays: 5,
-  refreshInterval: 5,
-  market: "NSE",
-  segment: "EQ",
-  theme: "system",
-};
+export const defaultSettings = { topN: 20, minPrice: 20, historyDays: 5, refreshInterval: 5, market: 'NSE', segment: 'EQ', theme: 'system' };

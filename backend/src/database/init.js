@@ -1,5 +1,5 @@
-import { db } from "./db.js";
-import { defaultSettings, schemaSql } from "./schema.sql.js";
+import { db } from './db.js';
+import { defaultSettings, schemaSql } from './schema.sql.js';
 
 db.exec(schemaSql);
 
@@ -9,5 +9,4 @@ const insertSetting = db.prepare(`
 `);
 const now = () => new Date().toISOString();
 
-for (const [key, value] of Object.entries(defaultSettings))
-  insertSetting.run(key, String(value), now());
+for (const [key, value] of Object.entries(defaultSettings)) insertSetting.run(key, String(value), now());
