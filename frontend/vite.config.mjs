@@ -1,27 +1,22 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
+const projectRoot = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
-  root: process.cwd(),
+  root: projectRoot,
   plugins: [react()],
+  resolve: { alias: { "@": path.resolve(projectRoot, "src") } },
   server: {
-    host: '127.0.0.1',
+    host: "127.0.0.1",
     port: 5173,
     strictPort: true,
-    fs: {
-      strict: true,
-      allow: [process.cwd()]
-    },
-    proxy: {
-      '/api': {
-        target: 'http://localhost:5000',
-        changeOrigin: true
-      }
-    }
+    fs: { strict: true, allow: [projectRoot] },
+    proxy: { "/api": { target: "http://localhost:5000", changeOrigin: true } },
   },
-  preview: {
-    host: '127.0.0.1',
-    port: 4173,
-    strictPort: true
-  }
+  preview: { host: "127.0.0.1", port: 4173, strictPort: true },
+  build: {
+    rollupOptions: { output: { manualChunks: { recharts: ["recharts"] } } },
+  },
 });

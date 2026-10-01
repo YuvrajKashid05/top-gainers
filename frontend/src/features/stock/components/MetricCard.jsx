@@ -1,0 +1,8 @@
+export default function MetricCard({ label, value }) {
+  return (
+    <div className="metric-card">
+      <div className="text-xs text-slate-500">{label}</div>
+      <div className="mt-1 font-semibold">{value}</div>
+    </div>
+  );
+}

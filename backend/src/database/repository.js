@@ -1,5 +1,5 @@
-import { db } from './db.js';
-import { getSettings } from '../services/settings.service.js';
+import { db } from "./db.js";
+import { getSettings } from "../services/settings.service.js";
 
 const insertStock = db.prepare(`
   INSERT INTO stocks (
@@ -34,10 +34,17 @@ const insertRefreshLog = db.prepare(`
   VALUES (@status, @stocksScanned, @stocksQualifying, @stocksSaved, @errorMessage, @startedAt, @completedAt)
 `);
 
-export function saveSuccessfulRefresh({ rows, stocksScanned, qualifyingCount, startedAt, completedAt, settings }) {
+export function saveSuccessfulRefresh({
+  rows,
+  stocksScanned,
+  qualifyingCount,
+  startedAt,
+  completedAt,
+  settings,
+}) {
   const capturedAt = completedAt;
   const transaction = db.transaction(() => {
-    db.prepare('DELETE FROM stocks').run();
+    db.prepare("DELETE FROM stocks").run();
     for (const [index, row] of rows.entries()) {
       insertStock.run({ rank: index + 1, ...row });
       insertHistory.run({
@@ -53,17 +60,17 @@ export function saveSuccessfulRefresh({ rows, stocksScanned, qualifyingCount, st
         tradedValue: row.tradedValue,
         topN: settings.topN,
         minPrice: settings.minPrice,
-        capturedAt
+        capturedAt,
       });
     }
     insertRefreshLog.run({
-      status: 'SUCCESS',
+      status: "SUCCESS",
       stocksScanned,
       stocksQualifying: qualifyingCount,
       stocksSaved: rows.length,
       errorMessage: null,
       startedAt,
-      completedAt
+      completedAt,
     });
     cleanupHistory(settings.historyDays);
   });
@@ -72,21 +79,23 @@ export function saveSuccessfulRefresh({ rows, stocksScanned, qualifyingCount, st
 
 export function saveFailedRefresh({ errorMessage, startedAt, completedAt }) {
   insertRefreshLog.run({
-    status: 'FAILED',
+    status: "FAILED",
     stocksScanned: 0,
     stocksQualifying: 0,
     stocksSaved: 0,
     errorMessage: String(errorMessage).slice(0, 1000),
     startedAt,
-    completedAt
+    completedAt,
   });
 }
 
 export function cleanupHistory(historyDays = getSettings().historyDays) {
-  db.prepare(`
+  db.prepare(
+    `
     DELETE FROM top20_history
     WHERE datetime(captured_at) < datetime('now', ?)
-  `).run(`-${Number(historyDays)} days`);
+  `,
+  ).run(`-${Number(historyDays)} days`);
 }
 
 function mapStock(row) {
@@ -111,16 +120,21 @@ function mapStock(row) {
     weekHigh52: row.week_high_52,
     weekLow52: row.week_low_52,
     exchangeFeedTime: row.exchange_feed_time,
-    updatedAt: row.updated_at
+    updatedAt: row.updated_at,
   };
 }
 
 export function getLatestStocks() {
-  return db.prepare('SELECT * FROM stocks ORDER BY rank ASC').all().map(mapStock);
+  return db
+    .prepare("SELECT * FROM stocks ORDER BY rank ASC")
+    .all()
+    .map(mapStock);
 }
 
 export function getLatestRefresh() {
-  const row = db.prepare('SELECT * FROM refresh_logs ORDER BY id DESC LIMIT 1').get();
+  const row = db
+    .prepare("SELECT * FROM refresh_logs ORDER BY id DESC LIMIT 1")
+    .get();
   if (!row) return null;
   return {
     id: row.id,
@@ -130,12 +144,16 @@ export function getLatestRefresh() {
     stocksSaved: row.stocks_saved,
     errorMessage: row.error_message,
     startedAt: row.started_at,
-    completedAt: row.completed_at
+    completedAt: row.completed_at,
   };
 }
 
 export function getLastSuccessfulRefresh() {
-  const row = db.prepare(`SELECT * FROM refresh_logs WHERE status = 'SUCCESS' ORDER BY id DESC LIMIT 1`).get();
+  const row = db
+    .prepare(
+      `SELECT * FROM refresh_logs WHERE status = 'SUCCESS' ORDER BY id DESC LIMIT 1`,
+    )
+    .get();
   if (!row) return null;
   return {
     id: row.id,
@@ -144,21 +162,44 @@ export function getLastSuccessfulRefresh() {
     stocksQualifying: row.stocks_qualifying,
     stocksSaved: row.stocks_saved,
     startedAt: row.started_at,
-    completedAt: row.completed_at
+    completedAt: row.completed_at,
   };
 }
 
-export function getHistory({ date, symbol, rank, topN, page = 1, pageSize = 50 }) {
+export function getHistory({
+  date,
+  symbol,
+  rank,
+  topN,
+  page = 1,
+  pageSize = 50,
+}) {
   const where = [];
   const params = {};
-  if (date) { where.push("substr(captured_at, 1, 10) = @date"); params.date = date; }
-  if (symbol) { where.push("(symbol LIKE @symbol OR trading_symbol LIKE @symbol)"); params.symbol = `%${symbol}%`; }
-  if (rank) { where.push('rank = @rank'); params.rank = rank; }
-  if (topN) { where.push('top_n_at_capture = @topN'); params.topN = topN; }
-  const clause = where.length ? `WHERE ${where.join(' AND ')}` : '';
-  const total = db.prepare(`SELECT COUNT(*) AS count FROM top20_history ${clause}`).get(params).count;
+  if (date) {
+    where.push("substr(captured_at, 1, 10) = @date");
+    params.date = date;
+  }
+  if (symbol) {
+    where.push("(symbol LIKE @symbol OR trading_symbol LIKE @symbol)");
+    params.symbol = `%${symbol}%`;
+  }
+  if (rank) {
+    where.push("rank = @rank");
+    params.rank = rank;
+  }
+  if (topN) {
+    where.push("top_n_at_capture = @topN");
+    params.topN = topN;
+  }
+  const clause = where.length ? `WHERE ${where.join(" AND ")}` : "";
+  const total = db
+    .prepare(`SELECT COUNT(*) AS count FROM top20_history ${clause}`)
+    .get(params).count;
   const offset = (page - 1) * pageSize;
-  const rows = db.prepare(`
+  const rows = db
+    .prepare(
+      `
     SELECT id, rank, symbol, trading_symbol AS tradingSymbol, token,
       ltp, previous_close AS previousClose, change_value AS changeValue,
       change_percent AS changePercent, volume, traded_value AS tradedValue,
@@ -169,12 +210,22 @@ export function getHistory({ date, symbol, rank, topN, page = 1, pageSize = 50 }
     ${clause}
     ORDER BY captured_at DESC, rank ASC
     LIMIT @limit OFFSET @offset
-  `).all({ ...params, limit: pageSize, offset });
-  return { rows, total, page, pageSize, totalPages: Math.max(1, Math.ceil(total / pageSize)) };
+  `,
+    )
+    .all({ ...params, limit: pageSize, offset });
+  return {
+    rows,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.max(1, Math.ceil(total / pageSize)),
+  };
 }
 
 export function getSymbolHistory(symbol, limit = 200) {
-  return db.prepare(`
+  return db
+    .prepare(
+      `
     SELECT id, rank, symbol, trading_symbol AS tradingSymbol, token,
       ltp, previous_close AS previousClose, change_value AS changeValue,
       change_percent AS changePercent, volume, traded_value AS tradedValue,
@@ -184,7 +235,9 @@ export function getSymbolHistory(symbol, limit = 200) {
     WHERE symbol = ? OR trading_symbol = ?
     ORDER BY captured_at ASC
     LIMIT ?
-  `).all(symbol, symbol, limit);
+  `,
+    )
+    .all(symbol, symbol, limit);
 }
 
 export function getHistoryExport(filters = {}) {
@@ -195,7 +248,9 @@ export function getStatus() {
   return {
     latest: getLatestRefresh(),
     lastSuccessful: getLastSuccessfulRefresh(),
-    stockCount: db.prepare('SELECT COUNT(*) AS count FROM stocks').get().count,
-    historyCount: db.prepare('SELECT COUNT(*) AS count FROM top20_history').get().count
+    stockCount: db.prepare("SELECT COUNT(*) AS count FROM stocks").get().count,
+    historyCount: db
+      .prepare("SELECT COUNT(*) AS count FROM top20_history")
+      .get().count,
   };
 }

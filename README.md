@@ -52,3 +52,18 @@ npm run dev
 
 The root directory is not an npm project. Do not run npm install or npm run dev from the root.
 The Vite config is `vite.config.mjs` and uses the frontend working directory as its root to avoid parent-directory package/workspace discovery.
+
+
+## Market snapshot cycle
+
+The backend enforces a fixed NSE equity snapshot cycle:
+
+- Market window: **09:15 to 15:15 IST**, Monday-Friday.
+- Snapshot interval: **exactly every 5 minutes**: 09:15, 09:20, 09:25, ... 15:15.
+- Every successful snapshot replaces the current dashboard rows and appends that Top N snapshot to `top20_history`.
+- No Angel One market-data fetch is performed outside 09:15-15:15 IST.
+- Settings changes do not trigger an immediate market fetch; they apply to the next scheduled snapshot.
+- The frontend polls the backend for display updates, but this polling does **not** fetch market data from Angel One.
+- The 5-minute interval is fixed and is not user-configurable.
+
+This keeps each trading day's history as a sequence of 5-minute snapshots. History retention is still controlled by `historyDays`.
