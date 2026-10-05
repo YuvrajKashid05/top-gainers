@@ -1,35 +1,36 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import Alert from '@/components/ui/Alert.jsx';
 import Spinner from '@/components/ui/Spinner.jsx';
-import { REFRESH_INTERVAL_MINUTES } from '@/config/constants.js';
-import { useCountdown } from '@/hooks/useCountdown.js';
+import { dateTime } from '@/utils/format.js';
 import { useMarketData } from './hooks/useMarketData.js';
-import HeroBanner from './components/HeroBanner.jsx';
 import MarketClosedState from './components/MarketClosedState.jsx';
-import StatsGrid from './components/StatsGrid.jsx';
-import TableToolbar from './components/TableToolbar.jsx';
 import MarketTable from './components/MarketTable.jsx';
 
 export default function DashboardPage() {
   const [auto, setAuto] = useState(true);
-  const [search, setSearch] = useState('');
   const [sort, setSort] = useState({ key: 'changePercent', direction: 'desc' });
   const { data, loading, error } = useMarketData(auto);
-  const countdown = useCountdown(data?.lastUpdated, REFRESH_INTERVAL_MINUTES * 60);
-  const filteredRows = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    const rows = data?.rows || [];
-    return query
-      ? rows.filter((row) =>
-          `${row.tradingSymbol} ${row.symbol} ${row.companyName || ''}`.toLowerCase().includes(query),
-        )
-      : rows;
-  }, [data, search]);
 
   return (
     <div className="space-y-5">
-      <HeroBanner data={data} countdown={countdown} auto={auto} setAuto={setAuto} />
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+        <div>
+          <h1 className="page-title">Top {data?.topN ?? '—'} Gainers</h1>
+          <p className="page-description">
+            {data?.marketStatus || 'NSE equity market data'}
+            {data?.lastUpdated && ` · Updated ${dateTime(data.lastUpdated)}`}
+          </p>
+        </div>
+        <label className="inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+          <input
+            type="checkbox"
+            checked={auto}
+            onChange={(event) => setAuto(event.target.checked)}
+          />
+          Auto sync
+        </label>
+      </div>
 
       {error && (
         <Alert>
@@ -38,24 +39,24 @@ export default function DashboardPage() {
             <div>
               <div className="font-semibold">Market data unavailable</div>
               <div>{error}</div>
-              {data?.lastUpdated && <div className="mt-1 text-xs">Showing last successful update.</div>}
+              {data?.lastUpdated && (
+                <div className="mt-1 text-xs">Showing last successful update.</div>
+              )}
             </div>
           </div>
         </Alert>
       )}
 
-      {data?.stale && !error && <Alert tone="warning">Market data unavailable. Showing last successful update.</Alert>}
+      {data?.stale && !error && (
+        <Alert tone="warning">Market data unavailable. Showing last successful update.</Alert>
+      )}
 
       {loading && !data ? (
         <Spinner label="Loading market data…" />
       ) : data?.marketOpen === false ? (
         <MarketClosedState />
       ) : (
-        <>
-          <StatsGrid data={data} />
-          <TableToolbar topN={data?.topN} search={search} setSearch={setSearch} count={filteredRows.length} />
-          <MarketTable rows={filteredRows} sort={sort} setSort={setSort} />
-        </>
+        <MarketTable rows={data?.rows || []} sort={sort} setSort={setSort} />
       )}
     </div>
   );

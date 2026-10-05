@@ -8,11 +8,11 @@ export function useMarketData(auto = true) {
   const state = useAsync(loader);
 
   useEffect(() => {
-    if (!auto || state.data?.marketOpen === false) return undefined;
+    if (!auto) return undefined;
 
     const id = setInterval(state.execute, UI_POLL_INTERVAL_MS);
     return () => clearInterval(id);
-  }, [auto, state.data?.marketOpen, state.execute]);
+  }, [auto, state.execute]);
 
   return state;
 }

@@ -16,8 +16,16 @@ export const api = {
   refresh: () => request('/api/market/refresh', { method: 'POST' }),
   status: () => request('/api/market/status'),
   settings: () => request('/api/settings'),
-  saveSettings: settings => request('/api/settings', { method: 'PUT', body: JSON.stringify(settings) }),
-  history: params => request(`/api/market/history?${new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '' && value !== undefined && value !== null))}`),
-  symbolHistory: symbol => request(`/api/market/history/${encodeURIComponent(symbol)}`),
-  exportUrl: (format, params) => `${API_BASE}/api/market/history/export.${format}?${new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '' && value !== undefined && value !== null))}`,
+  saveSettings: (settings) =>
+    request('/api/settings', {
+      method: 'PUT',
+      body: JSON.stringify(settings),
+    }),
+  history: (params) =>
+    request(
+      `/api/market/history?${new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '' && value !== undefined && value !== null))}`,
+    ),
+  symbolHistory: (symbol) => request(`/api/market/history/${encodeURIComponent(symbol)}`),
+  exportUrl: (format, params) =>
+    `${API_BASE}/api/market/history/export.${format}?${new URLSearchParams(Object.entries(params).filter(([, value]) => value !== '' && value !== undefined && value !== null))}`,
 };

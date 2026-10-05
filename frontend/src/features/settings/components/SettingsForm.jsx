@@ -5,4 +5,122 @@ import Card from '@/components/ui/Card.jsx';
 import Field from '@/components/ui/Field.jsx';
 import Alert from '@/components/ui/Alert.jsx';
 import { TOP_N_OPTIONS, THEME_OPTIONS } from '@/config/constants.js';
-export default function SettingsForm({ settings, theme, saving, error, success, onSave }) { const [form,setForm]=useState(settings); useEffect(()=>setForm(settings),[settings]); const set=(key,value)=>setForm(current=>({...current,[key]:value})); const submit=event=>{event.preventDefault();onSave({...form,theme:form.theme||theme});}; return <form onSubmit={submit} className="space-y-5"><Card className="space-y-5 p-5 sm:p-7"><div className="mb-1 inline-flex rounded-xl bg-indigo-50 p-2 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300"><Settings2 size={20}/></div><Field label="Top Gainers Count" htmlFor="topN" help="Minimum 5, maximum 100. This is the number saved and displayed by the backend."><input id="topN" type="number" min="5" max="100" required value={form.topN} onChange={e=>set('topN',e.target.value)} className="input"/></Field><div className="flex flex-wrap gap-2">{TOP_N_OPTIONS.map(n=><button type="button" key={n} onClick={()=>set('topN',n)} className={`button ${Number(form.topN)===n?'button-selected':'button-secondary'}`}>Top {n}</button>)}</div><Field label="Under-price threshold (₹)" htmlFor="minPrice" help="Stocks qualify when current LTP is below this value."><input id="minPrice" type="number" min="0" step="0.01" required value={form.minPrice} onChange={e=>set('minPrice',e.target.value)} className="input"/></Field><Field label="History retention (days)" htmlFor="historyDays" help="1 to 30 days."><input id="historyDays" type="number" min="1" max="30" required value={form.historyDays} onChange={e=>set('historyDays',e.target.value)} className="input"/></Field><Field label="Refresh interval" htmlFor="refreshInterval" help="Fixed at 5 minutes. Market snapshots run only from 09:15 through 15:15 IST."><div id="refreshInterval" className="input flex items-center justify-between bg-slate-50 dark:bg-slate-950"><span>Every 5 minutes</span><span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Fixed</span></div></Field><Field label="Market session" htmlFor="market-session" help="Fixed to NSE equity cash market."><div id="market-session" className="grid grid-cols-2 gap-2"><div className="badge-panel">NSE</div><div className="badge-panel">EQ only</div></div></Field><Field label="Theme" htmlFor="theme"><select id="theme" value={form.theme||theme} onChange={e=>set('theme',e.target.value)} className="input">{THEME_OPTIONS.map(v=><option key={v} value={v}>{v[0].toUpperCase()+v.slice(1)}</option>)}</select></Field>{error&&<Alert>{error}</Alert>}{success&&<Alert tone="success">{success}</Alert>}<Button type="submit" variant="primary" disabled={saving}><Save size={16} aria-hidden="true"/> {saving?'Saving…':'Save settings'}</Button></Card></form>; }
+export default function SettingsForm({ settings, theme, saving, error, success, onSave }) {
+  const [form, setForm] = useState(settings);
+  useEffect(() => setForm(settings), [settings]);
+  const set = (key, value) => setForm((current) => ({ ...current, [key]: value }));
+  const submit = (event) => {
+    event.preventDefault();
+    onSave({ ...form, theme: form.theme || theme });
+  };
+
+  return (
+    <form onSubmit={submit} className="space-y-5">
+      <Card className="space-y-5 p-5 sm:p-7">
+        <div className="mb-1 inline-flex rounded-xl bg-indigo-50 p-2 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-300">
+          <Settings2 size={20} />
+        </div>
+        <Field
+          label="Top Gainers Count"
+          htmlFor="topN"
+          help="Minimum 5, maximum 100. This is the number saved and displayed by the backend."
+        >
+          <input
+            id="topN"
+            type="number"
+            min="5"
+            max="100"
+            required
+            value={form.topN}
+            onChange={(event) => set('topN', event.target.value)}
+            className="input"
+          />
+        </Field>
+        <div className="flex flex-wrap gap-2">
+          {TOP_N_OPTIONS.map((number) => (
+            <button
+              type="button"
+              key={number}
+              onClick={() => set('topN', number)}
+              className={`button ${Number(form.topN) === number ? 'button-selected' : 'button-secondary'}`}
+            >
+              Top {number}
+            </button>
+          ))}
+        </div>
+        <Field
+          label="Under-price threshold (₹)"
+          htmlFor="minPrice"
+          help="Stocks qualify when current LTP is below this value."
+        >
+          <input
+            id="minPrice"
+            type="number"
+            min="0"
+            step="0.01"
+            required
+            value={form.minPrice}
+            onChange={(event) => set('minPrice', event.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field label="History retention (days)" htmlFor="historyDays" help="1 to 30 days.">
+          <input
+            id="historyDays"
+            type="number"
+            min="1"
+            max="30"
+            required
+            value={form.historyDays}
+            onChange={(event) => set('historyDays', event.target.value)}
+            className="input"
+          />
+        </Field>
+        <Field
+          label="Refresh interval"
+          htmlFor="refreshInterval"
+          help="Fixed at 5 minutes. Market snapshots run only from 09:15 through 15:15 IST."
+        >
+          <div
+            id="refreshInterval"
+            className="input flex items-center justify-between bg-slate-50 dark:bg-slate-950"
+          >
+            <span>Every 5 minutes</span>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+              Fixed
+            </span>
+          </div>
+        </Field>
+        <Field
+          label="Market session"
+          htmlFor="market-session"
+          help="Fixed to NSE equity cash market."
+        >
+          <div id="market-session" className="grid grid-cols-2 gap-2">
+            <div className="badge-panel">NSE</div>
+            <div className="badge-panel">EQ only</div>
+          </div>
+        </Field>
+        <Field label="Theme" htmlFor="theme">
+          <select
+            id="theme"
+            value={form.theme || theme}
+            onChange={(event) => set('theme', event.target.value)}
+            className="input"
+          >
+            {THEME_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option[0].toUpperCase() + option.slice(1)}
+              </option>
+            ))}
+          </select>
+        </Field>
+        {error && <Alert>{error}</Alert>}
+        {success && <Alert tone="success">{success}</Alert>}
+        <Button type="submit" variant="primary" disabled={saving}>
+          <Save size={16} aria-hidden="true" /> {saving ? 'Saving…' : 'Save settings'}
+        </Button>
+      </Card>
+    </form>
+  );
+}

@@ -11,7 +11,7 @@ if (!(Test-Path .env)) { Copy-Item .env.example .env }
 npm run dev
 ```
 
-Backend runs on http://localhost:5000
+Backend runs on http://127.0.0.1:5000
 
 ## Frontend
 
@@ -32,6 +32,18 @@ Run `npm install` only inside `backend` or `frontend`. Do not run npm commands f
 ## Environment
 
 Configure `backend/.env` with the Angel One SmartAPI credentials and application settings from `backend/.env.example`. Credentials are backend-only and are never exposed to the frontend.
+
+The backend binds to `127.0.0.1` by default for local personal use. Settings updates and manual refresh are available without a separate admin key. Keep Angel One credentials in `backend/.env`; do not expose them in frontend configuration. Avoid setting `HOST=0.0.0.0` unless remote access is intentional and appropriately protected.
+
+## Deployment status
+
+This repository is currently configured for local personal use, not direct public deployment:
+
+- The API has no authentication, so do not expose it directly to the public internet.
+- For separate frontend hosting, build the frontend with `VITE_API_URL` set to the deployed API origin, and configure the backend `FRONTEND_ORIGIN` to the exact frontend origin.
+- A hosted backend must set `HOST=0.0.0.0` (or the host platform's required bind address) and use persistent storage for `DATABASE_PATH`; otherwise SQLite snapshots may be lost on restart or redeploy.
+- Store Angel One credentials only in the backend's deployment secrets/environment. Do not put them in frontend `VITE_*` variables.
+- Use HTTPS and add access control at a trusted reverse proxy or hosting platform before making the API remotely reachable.
 
 
 ## Start independently

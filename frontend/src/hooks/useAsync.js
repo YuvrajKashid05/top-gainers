@@ -14,7 +14,10 @@ export function useAsync(asyncFunction, { immediate = true } = {}) {
       return null;
     }
   }, [asyncFunction]);
-  useEffect(() => () => { mounted.current = false; }, []);
+  useEffect(() => {
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  }, []);
   useEffect(() => { if (immediate) execute(); }, [execute, immediate]);
   return { ...state, execute };
 }

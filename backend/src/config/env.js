@@ -8,6 +8,7 @@ const number = (key, fallback) => {
 
 export const env = {
   PORT: number('PORT', 5000),
+  HOST: process.env.HOST || '127.0.0.1',
   FRONTEND_ORIGIN: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
   DATABASE_PATH: process.env.DATABASE_PATH || './data/market.db',
   ANGEL_API_KEY: process.env.ANGEL_API_KEY || '',
@@ -23,7 +24,7 @@ export const env = {
   INSTRUMENT_REFRESH_HOURS: number('INSTRUMENT_REFRESH_HOURS', 24),
   QUOTE_BATCH_SIZE: Math.min(50, Math.max(1, number('QUOTE_BATCH_SIZE', 50))),
   REQUEST_TIMEOUT_MS: number('REQUEST_TIMEOUT_MS', 15000),
-  MAX_RETRIES: Math.min(5, Math.max(0, number('MAX_RETRIES', 3)))
+  MAX_RETRIES: Math.min(5, Math.max(0, number('MAX_RETRIES', 3))),
 };
 
 export const dbPath = path.resolve(process.cwd(), env.DATABASE_PATH);
